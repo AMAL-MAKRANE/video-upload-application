@@ -20,7 +20,7 @@ async function startServer() {
 
   const server = new ApolloServer({
     typeDefs,
-    resolvers :{Query: {...users.Query,...videos.Query},Mutation: {...users.Mutation,...videos.Mutation}},
+    resolvers: { Query: { ...users.Query, ...videos.Query }, Mutation: { ...users.Mutation, ...videos.Mutation } },
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       ApolloServerPluginLandingPageGraphQLPlayground(),

@@ -33,8 +33,8 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: 'prd-insea-workshop' #Must be unique in Heroku
-          heroku_email: 'belbah.mouad@gmail.com'
+          heroku_app_name: 'video-upload-app-api' #Must be unique in Heroku
+          heroku_email: 'laoussamaofficial@gmail.com'
           usedocker: true
         env:
           HD_NODE_ENV: 'production'
