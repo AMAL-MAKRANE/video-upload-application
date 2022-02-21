@@ -80,10 +80,9 @@ const users = {
       }
     },
     register: async (
-      _, args
+      _,
+      { registerInput: { name, email, password, confirmPassword } }
     ) => {
-      const { email, password, name, confirmPassword } = args.input
-
       const { valid, errors } = validateRegisterInput(
         name,
         email,

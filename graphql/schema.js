@@ -64,7 +64,7 @@ const typeDefs = gql`
     addVideo(input: AddVideoInput!): AddVideoResponse!
     deleteVideo(input: DeleteVideoInput!): DeleteVideoResponse!
     login(input: LoginInput!): LoginResponse!
-    register(input: RegisterInput): RegisterResponse!
+    register(registerInput: RegisterInput): RegisterResponse!
   }
   type Query {
     videosForHome: [Video!]!
