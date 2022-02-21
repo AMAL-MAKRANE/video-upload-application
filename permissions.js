@@ -3,7 +3,7 @@ import { getUserById } from './models/user.js'
 
 // Require that the user must be authenticated and exists in the database
 export function requireUser(resolver) {
-  throw new Error("here")
+ 
   return async (obj, args, context, info) => {
     // user payload from the token (only holds the ID)
     const { user: userJWTPayload } = context

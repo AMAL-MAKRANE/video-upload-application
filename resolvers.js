@@ -1,4 +1,4 @@
-import { ForbiddenError } from 'apollo-server-core'
+import { ForbiddenError } from 'apollo-server-core';
 import { getUserById, getUserByEmail, comparePassword } from './models/user.js'
 import {
   createVideo,

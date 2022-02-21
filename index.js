@@ -9,7 +9,7 @@ import app from './app.js'
 import connectToMongo from './mongo.js'
 import typeDefs from './graphql/schema.js'
 import users from './graphql/resolvers/users.js'
-
+import videos from './graphql/resolvers/videos.js'
 import * as config from './config.js'
 
 async function startServer() {
@@ -20,7 +20,7 @@ async function startServer() {
 
   const server = new ApolloServer({
     typeDefs,
-    resolvers :{...users},
+    resolvers :{Query: {...users.Query,...videos.Query},Mutation: {...users.Mutation,...videos.Mutation}},
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       ApolloServerPluginLandingPageGraphQLPlayground(),

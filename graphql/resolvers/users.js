@@ -2,15 +2,15 @@
 import bcrypt from 'bcrypt'
 //const bcrypt = reqre("bcryptjs");
 //const jwt = require("jsonwebtoken");
-import jwt from "jsonwebtoken" ;
+import jwt from "jsonwebtoken";
 
 //const { UserInputError } = require("apollo-server");
-import { UserInputError } from "apollo-server-core" ;
+import { UserInputError } from "apollo-server-core";
 import { generateJWT } from '../../jwt.js'
-import {User,getUserByEmail, comparePassword} from "../../models/user.js" ;
+import { User, getUserByEmail, comparePassword } from "../../models/user.js";
 //const {User} = import("../../models/user");
-import  {validateRegisterInput} from "../../util/validators.js";
-import { jwtAttr } from "../../config.js"; 
+import { validateRegisterInput } from "../../util/validators.js";
+import { jwtAttr } from "../../config.js";
 
 //const { SECRET_KEY } = require("../../config");
 
@@ -43,48 +43,49 @@ const users = {
   },
   Mutation: {
     login: async (_, args, ctx, info) => {
-        const { email, password } = args.input
-  
-        //Dummy validation
-        if (!email || !password)
-          return {
-            success: false,
-            message: `Valid Email or Password are Required`,
-          }
-        const userWithEmail = await getUserByEmail(email)
-  
-        if (!userWithEmail)
-          return {
-            success: false,
-            message: `Wrong Email or Password`,
-          }
-  
-        const isCorrectPassword = await comparePassword(
-          password,
-          userWithEmail.password
-        )
-        if (!isCorrectPassword)
-          return {
-            success: false,
-            message: `Wrong Email or Password`,
-          }
-        //Before returning the user you might want to add a DTO layer
-        //to Stop information such as password, _id (internal ID) from being sent.
-  
-        const token = await generateJWT({ user: userWithEmail })
-  
+      const { email, password } = args.input
+
+      //Dummy validation
+      if (!email || !password)
         return {
-          success: true,
-          message: `Logged in succesfuly`,
-          token: token,
+          success: false,
+          message: `Valid Email or Password are Required`,
         }
-      },
+      const userWithEmail = await getUserByEmail(email)
+
+      if (!userWithEmail)
+        return {
+          success: false,
+          message: `Wrong Email or Password`,
+        }
+
+      const isCorrectPassword = await comparePassword(
+        password,
+        userWithEmail.password
+      )
+      if (!isCorrectPassword)
+        return {
+          success: false,
+          message: `Wrong Email or Password`,
+        }
+      //Before returning the user you might want to add a DTO layer
+      //to Stop information such as password, _id (internal ID) from being sent.
+
+      const token = await generateJWT({ user: userWithEmail })
+
+      return {
+        success: true,
+        message: `Logged in succesfuly`,
+        token: token,
+      }
+    },
     register: async (
-      _,
-      { registerInput: { username, email, password, confirmPassword } }
+      _, args
     ) => {
+      const { email, password, name, confirmPassword } = args.input
+
       const { valid, errors } = validateRegisterInput(
-        username,
+        name,
         email,
         password,
         confirmPassword
@@ -92,11 +93,11 @@ const users = {
       if (!valid) {
         throw new UserInputError("Errors", { errors });
       }
-      const user = await User.findOne({ username });
+      const user = await User.findOne({ email });
       if (user) {
-        throw new UserInputError("Username is taken", {
+        throw new UserInputError("Email is taken", {
           errors: {
-            username: "This username is taken",
+            username: "This email is taken",
           },
         });
       }
@@ -105,21 +106,24 @@ const users = {
 
       const newUser = new User({
         email,
-        name : username,
+        name,
         password,
         createdAt: new Date().toISOString(),
       });
 
       const res = await newUser.save();
-
-      const token = generateToken(res);
+      const token = await generateJWT({ user: res })
+      //const token = generateToken(res);
 
       return {
+
         ...res._doc,
         id: res._id,
         token,
+        success: true,
+        message: `Registered succesfuly`,
       };
     },
   },
 };
-export default  users ;
+export default users;

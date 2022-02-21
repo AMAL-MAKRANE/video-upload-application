@@ -7,11 +7,11 @@ import { requireUser } from '../../permissions.js'
 import { UserInputError } from "apollo-server-core" ;
 import { generateJWT } from '../../jwt.js'
 import {getVideosByOwnerId, getVideoById,createVideo, deleteVideoById,Video} from "../../models/video.js" ;
-
+import {getUserById} from "../../models/user.js"
 import  {validateRegisterInput} from "../../util/validators.js";
 import { jwtAttr } from "../../config.js"; 
 import checkAuth from '../../util/check-auth.js';
-const users = {
+const videos = {
     Query: {
         video: async (_, { id }) => {
             try {
@@ -21,18 +21,18 @@ const users = {
               throw new Error(err);
             }
           },
-          videosByOwner: async (_, { id }) => {
-            try {
-              const video= getVideosByOwnerId(id)
-              if (video) {
-                return video;
-              } else {
-                throw new Error("Video not found");
-              }
-            } catch (err) {
-              throw new Error(err);
-            }
-          },
+        //   videosByOwner: async (_, { id }) => {
+        //     try {
+        //       const video= getVideosByOwnerId(id)
+        //       if (video) {
+        //         return video;
+        //       } else {
+        //         throw new Error("Video not found");
+        //       }
+        //     } catch (err) {
+        //       throw new Error(err);
+        //     }
+        //   },
           videosForHome: async () => {
             try {
                 const videos = await Video.find().sort({ createdAt: -1 });
@@ -43,12 +43,16 @@ const users = {
 
 
           }
+        // videosForHome:  requireUser(async (parent, args, ctx, info) => {
+        //     return getVideosByOwnerId(ctx.user)
+        //   }),
+         
 
     },
     Mutation: {
 
-        addVideo: async (_, args, ctx, info) => {
-            const owner = checkAuth(ctx);
+        addVideo: requireUser(async (_, args, ctx, info) => {
+            const owner = await getUserById(ctx.user) ;
             
             const { title, description, thumbnail, length } = args.input
             
@@ -73,7 +77,7 @@ const users = {
               message: `Video created successfully`,
               video: newVideo,
             }
-          },
+          }),
           deleteVideo: requireUser(async (_, args, ctx, info) => {
             const { id } = args.input
             const owner = ctx.user
@@ -97,3 +101,4 @@ const users = {
         },
 
     }
+    export default  videos ;

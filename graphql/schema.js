@@ -7,7 +7,7 @@ const typeDefs = gql`
     title: String!
     thumbnail: String
     description: String
-    owner: User!
+    owner: ID!
     length: Int
   }
 
@@ -49,17 +49,22 @@ const typeDefs = gql`
     password: String!
   }
   input RegisterInput {
-    username: String!
+    name: String!
     password: String!
     confirmPassword: String!
     email: String!
+  }
+  type RegisterResponse {
+    success: Boolean!
+    message: String!
+    token: String
   }
 
   type Mutation {
     addVideo(input: AddVideoInput!): AddVideoResponse!
     deleteVideo(input: DeleteVideoInput!): DeleteVideoResponse!
     login(input: LoginInput!): LoginResponse!
-    register(registerInput: RegisterInput): User!
+    register(input: RegisterInput): RegisterResponse!
   }
   type Query {
     videosForHome: [Video!]!
